@@ -1,0 +1,117 @@
+# --- Specifici progetto ---
+.env
+static/uploads/
+static/cache/
+ollama_data/
+open_webui_data/
+wp_data/
+bw_data/
+bw_storage/
+
+# --- Docker ---
+.dockerignore
+
+# --- Logs ---
+*.log
+logs/
+docker-compose.override.yml
+
+# --- Backup e certificati ---
+*.bak
+*.backup
+certs/
+ssl/
+backup/
+
+# --- Database dumps ---
+*.sql
+*.dump
+
+# --- Node.js (se serve) ---
+node_modules/
+package-lock.json
+yarn.lock
+npm-debug.log*
+
+# --- Build ---
+dist/
+build/
+.next/
+.nuxt/
+
+# --- OS ---
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# --- Editor / IDE ---
+# Vim
+*.swp
+*.swo
+*.vimrc
+.viminfo
+# Emacs
+*~
+\#*\#
+.\#*
+# VSCode
+.vscode/
+*.code-workspace
+# JetBrains IDEs (IntelliJ, PyCharm, WebStorm...)
+.idea/
+*.iml
+*.ipr
+*.iws
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# --- Temporary ---
+*.tmp
+*.temp
+.cache/
+.temp/
+
+# --- Runtime ---
+*.pid
+*.seed
+*.pid.lock
+
+# --- Environment ---
+.env.local
+.env.production
+.env.staging
+.env.development
+
+# --- Ollama specifici ---
+ollama_models/
+*.gguf
+*.bin
+
+# --- WordPress specifici ---
+wp-config-local.php
+wp-content/uploads/
+wp-content/cache/
+wp-content/backup-db/
+wp-content/backups/
+wp-content/blogs.dir/
+wp-content/upgrade/
+
+# --- Security ---
+*.key
+*.pem
+*.crt
+*.csr
+private/
+secrets/

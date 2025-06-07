@@ -1,0 +1,298 @@
+x-bw-env: &bw-env
+  AUTOCONF_MODE: "yes"
+  API_WHITELIST_IP: "${BUNKERWEB_API_WHITELIST}"
+
+services:
+  ### IA WEBAPP ###
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-bunker
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./ollama_entrypoint.sh:/ollama_entrypoint.sh
+    environment:
+      - LLM_MODEL_VERSION=${LLM_MODEL_VERSION}
+    entrypoint: ["/bin/bash", "/ollama_entrypoint.sh"]
+    restart: unless-stopped
+    networks:
+      - bw-services
+    # Aumenta la memoria disponibile
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 2G
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:ollama
+    container_name: open-webui-bunker
+    ports:
+      - "${WEBUI_PORT}:8080" #aggiunto per testing
+    labels:
+      - "bunkerweb.ENABLE=yes"
+      - "bunkerweb.SERVER_NAME=${DOMAIN_IA}"
+      - "bunkerweb.USE_REVERSE_PROXY=yes"
+      - "bunkerweb.REVERSE_PROXY_URL=/"
+      - "bunkerweb.REVERSE_PROXY_HOST=http://open-webui-bunker:8080"
+      # Configurazioni proxy ottimizzate per Open WebUI
+      - "bunkerweb.REVERSE_PROXY_BUFFERING=no"
+      - "bunkerweb.REVERSE_PROXY_KEEPALIVE=yes"
+      - "bunkerweb.REVERSE_PROXY_TIMEOUT_CONNECT=30"
+      - "bunkerweb.REVERSE_PROXY_TIMEOUT_SEND=600"
+      - "bunkerweb.REVERSE_PROXY_TIMEOUT_READ=600"
+      # Supporto WebSocket essenziale per Open WebUI
+      - "bunkerweb.REVERSE_PROXY_WS=yes"
+      - "bunkerweb.REVERSE_PROXY_WS_TIMEOUT=86400"
+      # Headers WebSocket specifici
+      - "bunkerweb.REVERSE_PROXY_HEADERS=X-Forwarded-For ${proxy_add_x_forwarded_for};X-Forwarded-Proto ${scheme};X-Real-IP ${remote_addr};Host ${host};Upgrade ${http_upgrade};Connection ${connection_upgrade}"
+      # Configurazioni aggiuntive per streaming
+      - "bunkerweb.CUSTOM_CONF_HTTP_proxy_http_version=1.1"
+      - "bunkerweb.CUSTOM_CONF_HTTP_proxy_set_header_Upgrade=$http_upgrade"
+      - "bunkerweb.CUSTOM_CONF_HTTP_proxy_set_header_Connection=upgrade"
+      - "bunkerweb.CUSTOM_CONF_HTTP_proxy_cache_bypass=$http_upgrade"
+      # Disabilita protezioni aggressive per Open WebUI
+      - "bunkerweb.USE_ANTIBOT=no"
+      - "bunkerweb.USE_LIMIT_REQ=no"
+      - "bunkerweb.USE_LIMIT_CONN=no"
+      - "bunkerweb.USE_BAD_BEHAVIOR=no"
+      - "bunkerweb.USE_DNSBL=no"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Configurazioni essenziali per il funzionamento dietro proxy
+      - WEBUI_SECRET_KEY=your-secret-key-change-this-to-something-secure-and-long
+      - WEBUI_BASE_URL=https://${DOMAIN_IA}
+      - WEBUI_SESSION_COOKIE_SAME_SITE=Lax
+      - WEBUI_SESSION_COOKIE_SECURE=true
+      - WEBUI_SESSION_COOKIE_HTTP_ONLY=true
+      # Configurazioni aggiuntive per migliorare il funzionamento
+      - ENABLE_STREAMING=true
+      - ENABLE_SIGNUP=true
+      - DEFAULT_USER_ROLE=admin
+      - ENABLE_LOGIN_FORM=true
+      - WEBUI_AUTH=true
+      - ENABLE_ADMIN_EXPORT=true
+      - ENABLE_COMMUNITY_SHARING=false
+      - SHOW_ADMIN_DETAILS=true
+    volumes:
+      - open_webui_data:/app/backend/data
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    networks:
+      - bw-services
+
+  ### WORDPRESS ###
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress
+    labels:
+      - "bunkerweb.ENABLE=yes"
+      - "bunkerweb.SERVER_NAME=${DOMAIN_WORDPRESS}"
+      - "bunkerweb.USE_REVERSE_PROXY=yes"
+      - "bunkerweb.REVERSE_PROXY_URL=/"
+      - "bunkerweb.REVERSE_PROXY_HOST=http://wordpress:80"
+      # WordPress mantiene protezioni normali
+      - "bunkerweb.USE_BAD_BEHAVIOR=yes"
+      - "bunkerweb.BAD_BEHAVIOR_THRESHOLD=10"
+    environment:
+      WORDPRESS_DB_HOST: wp-db
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+    depends_on:
+      - wp-db
+    networks:
+      - bw-services
+      - bw-db
+    restart: unless-stopped
+
+  wp-db:
+    image: mariadb:11
+    container_name: wp-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - wp-data:/var/lib/mysql
+    networks:
+      - bw-db
+    restart: unless-stopped
+
+  ### STATIC SITE ###
+  staticpage:
+    image: nginx:alpine
+    container_name: staticpage
+    labels:
+      - "bunkerweb.ENABLE=yes"
+      - "bunkerweb.SERVER_NAME=${DOMAIN_STATIC}"
+      - "bunkerweb.USE_REVERSE_PROXY=yes"
+      - "bunkerweb.REVERSE_PROXY_URL=/"
+      - "bunkerweb.REVERSE_PROXY_HOST=http://staticpage:80"
+    volumes:
+      - ./static:/usr/share/nginx/html:ro
+    networks:
+      - bw-services
+    restart: unless-stopped
+
+  ### BUNKERWEB ###
+  bunkerweb:
+    image: bunkerity/bunkerweb:1.6.1
+    container_name: bunkerweb
+    labels:
+      - "bunkerweb.INSTANCE=yes"
+    environment:
+      <<: *bw-env
+      MULTISITE: "yes"
+      SERVER_NAME: "${DOMAIN_IA} ${DOMAIN_WORDPRESS} ${DOMAIN_STATIC}"
+      USE_LETSENCRYPT: "yes"
+      LETSENCRYPT_EMAIL: "${EMAIL_LETSENCRYPT}"
+      LETSENCRYPT_STAGING: "no"
+      AUTO_LETS_ENCRYPT: "yes"
+      USE_REVERSE_PROXY: "yes"
+      LOG_LEVEL: "info"
+      USE_MODSECURITY: "no"
+      USE_WHITELIST: "yes"
+      WHITELIST_COUNTRY: "IT"
+      SERVE_FILES: "no"
+      DISABLE_DEFAULT_SERVER: "no"
+      # Configurazioni globali più permissive
+      REVERSE_PROXY_BUFFERING: "no"
+      REVERSE_PROXY_KEEPALIVE: "yes"
+      # Configurazioni WebSocket globali
+      REVERSE_PROXY_WS: "yes"
+      REVERSE_PROXY_WS_TIMEOUT: "86400"
+      # Configurazioni HTTP per WebSocket
+      CUSTOM_CONF_HTTP_map: '$http_upgrade $connection_upgrade { default upgrade; "" close; }'
+      CUSTOM_CONF_HTTP_proxy_http_version: "1.1"
+      # Configurazioni specifiche per Socket.IO a livello globale
+      CUSTOM_CONF_SERVER_proxy_read_timeout: "86400s"
+      CUSTOM_CONF_SERVER_proxy_send_timeout: "86400s"
+      # Bad Behavior con soglie più ragionevoli
+      USE_BAD_BEHAVIOR: "yes"
+      BAD_BEHAVIOR_STATUS_CODES: "400 404 405 429 444"
+      BAD_BEHAVIOR_THRESHOLD: "20"
+      BAD_BEHAVIOR_COUNT_TIME: "3600"
+      BAD_BEHAVIOR_BAN_TIME: "300"
+    ports:
+      - "80:8080/tcp"
+      - "443:8443/tcp"
+      - "443:8443/udp"
+    volumes:
+      - bw-storage:/data
+    restart: unless-stopped
+    networks:
+      - bw-universe
+      - bw-services
+    depends_on:
+      - bw-scheduler
+
+  bw-scheduler:
+    image: bunkerity/bunkerweb-scheduler:1.6.1
+    container_name: bw-scheduler
+    environment:
+      <<: *bw-env
+      BUNKERWEB_INSTANCES: "bunkerweb"
+      SERVER_NAME: "${DOMAIN_IA} ${DOMAIN_WORDPRESS} ${DOMAIN_STATIC}"
+      MULTISITE: "yes"
+      DATABASE_URI: "mariadb+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@bw-db:3306/${MYSQL_DATABASE}"
+      USE_LETSENCRYPT: "yes"
+      LETSENCRYPT_EMAIL: "${EMAIL_LETSENCRYPT}"
+      LETSENCRYPT_STAGING: "no"
+      AUTO_LETS_ENCRYPT: "yes"
+      LOG_LEVEL: "info"
+      USE_MODSECURITY: "no"
+      USE_WHITELIST: "yes"
+      WHITELIST_COUNTRY: "IT"
+      # Stesso comportamento del container principale
+      USE_BAD_BEHAVIOR: "yes"
+      BAD_BEHAVIOR_STATUS_CODES: "400 404 405 429 444"
+      BAD_BEHAVIOR_THRESHOLD: "20"
+      BAD_BEHAVIOR_COUNT_TIME: "3600"
+      BAD_BEHAVIOR_BAN_TIME: "300"
+    volumes:
+      - bw-storage:/data
+    restart: unless-stopped
+    networks:
+      - bw-universe
+      - bw-db
+    depends_on:
+      - bw-db
+
+  bw-autoconf:
+    image: bunkerity/bunkerweb-autoconf:1.6.1
+    container_name: bw-autoconf
+    depends_on:
+      - bunkerweb
+      - bw-docker
+    environment:
+      <<: *bw-env
+      DATABASE_URI: "mariadb+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@bw-db:3306/${MYSQL_DATABASE}"
+      DOCKER_HOST: "tcp://bw-docker:2375"
+    restart: unless-stopped
+    networks:
+      - bw-universe
+      - bw-docker
+      - bw-db
+      - bw-services
+
+  bw-docker:
+    image: tecnativa/docker-socket-proxy:nightly
+    container_name: bw-docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      CONTAINERS: "1"
+      LOG_LEVEL: "warning"
+    restart: unless-stopped
+    networks:
+      - bw-docker
+
+  bw-ui:
+    image: bunkerity/bunkerweb-ui:1.6.1
+    container_name: bw-ui
+    environment:
+      <<: *bw-env
+      DATABASE_URI: "mariadb+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@bw-db:3306/${MYSQL_DATABASE}"
+    ports:
+      - "7000:7000"
+    restart: "unless-stopped"
+    networks:
+      - bw-universe
+      - bw-db
+    depends_on:
+      - bw-db
+
+  bw-db:
+    image: mariadb:11
+    container_name: bw-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - bw-data:/var/lib/mysql
+    restart: unless-stopped
+    networks:
+      - bw-db
+
+volumes:
+  wp-data:
+  bw-data:
+  bw-storage:
+  ollama_data:
+  open_webui_data:
+
+networks:
+  bw-universe:
+    driver: bridge
+  bw-services:
+    driver: bridge
+  bw-db:
+    driver: bridge
+  bw-docker:
+    driver: bridge
