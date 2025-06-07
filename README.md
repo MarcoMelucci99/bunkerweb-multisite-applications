@@ -48,10 +48,6 @@ docker compose up -d
 
 ### 5. Enjoy! 😁
 
-- **AI Chat Interface**: Access your AI assistant at your configured domain
-- **WordPress Admin**: `https://your-wp-domain.com/wp-admin`
-- **BunkerWeb UI**: Available at `http://your-server-ip:7000`
-
 ## 🛡️ Security Features (BunkerWeb)
 
 - **Web Application Firewall (WAF)** with ModSecurity rules
@@ -91,14 +87,6 @@ To change models:
 - Change all default passwords in `.env`
 - Review BunkerWeb configuration in `docker-compose.yml`
 - Monitor logs: `docker compose logs -f bunkerweb`
-- Access BunkerWeb UI for advanced security settings
-
-### Backup Strategy
-```bash
-# Backup volumes
-docker run --rm -v bunkerweb-multisite-applications_wp-data:/data -v $(pwd):/backup ubuntu tar czf /backup/wp-backup.tar.gz /data
-docker run --rm -v bunkerweb-multisite-applications_ollama_data:/data -v $(pwd):/backup ubuntu tar czf /backup/ollama-backup.tar.gz /data
-```
 
 ## 🐛 Troubleshooting
 
