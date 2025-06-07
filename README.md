@@ -123,11 +123,10 @@ If AI chat streaming doesn't work, check:
 ## 👥 Development Team
 
 **Developed by CyberHackademy GroupF:**
-- 🔵 [@MarcoMelucci99](https://github.com/MarcoMelucci99)
-- 🟢 [@erasmoprosciutto](https://github.com/erasmoprosciutto)  
-- 🟡 [@danieledegni](https://github.com/danieledegni)
-- 🟣 [@luigimaresca](https://github.com/luigimaresca)
-
+- 🔵 [@mMarco Melucci](https://github.com/MarcoMelucci99)
+- 🟢 [@Erasmo Prosciutto](https://github.com/CS-Era)
+- 🟡 [@Daniele Degni](https://github.com/DennyDAkyX)
+- 🟣 [@Luigi Maresca](https://github.com/luigii99)
 ---
 
 **Powered By**: CyberHackademy Unina 🎓
