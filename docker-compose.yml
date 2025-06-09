@@ -27,8 +27,7 @@ services:
   open-webui:
     image: ghcr.io/open-webui/open-webui:ollama
     container_name: open-webui-bunker
-    ports:
-      - "${WEBUI_PORT}:8080" #aggiunto per testing
+
     labels:
       - "bunkerweb.ENABLE=yes"
       - "bunkerweb.SERVER_NAME=${DOMAIN_IA}"
@@ -57,6 +56,18 @@ services:
       - "bunkerweb.USE_LIMIT_CONN=no"
       - "bunkerweb.USE_BAD_BEHAVIOR=no"
       - "bunkerweb.USE_DNSBL=no"
+      # NUOVE CONFIGURAZIONI PER VOICE MODE
+      - "bunkerweb.USE_MODSECURITY=no"
+      - "bunkerweb.USE_WHITELIST=no"
+      - "bunkerweb.ALLOWED_METHODS=GET POST PUT DELETE PATCH HEAD OPTIONS"
+      - "bunkerweb.DISABLE_DEFAULT_SERVER=no"
+      # Permetti richieste per media/audio
+      - "bunkerweb.CUSTOM_CONF_SERVER_client_max_body_size=100M"
+      # Headers per supporto media
+      - "bunkerweb.CUSTOM_CONF_HTTP_add_header_Permissions-Policy=microphone=(self)"
+      - "bunkerweb.CUSTOM_CONF_HTTP_add_header_Feature-Policy=microphone 'self'"
+      # CSP permissivo per media
+      - "bunkerweb.CUSTOM_CONF_HTTP_add_header_Content-Security-Policy=default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: *; media-src 'self' blob: data: *; microphone 'self'"
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -75,6 +86,11 @@ services:
       - ENABLE_ADMIN_EXPORT=true
       - ENABLE_COMMUNITY_SHARING=false
       - SHOW_ADMIN_DETAILS=true
+      # NUOVE CONFIGURAZIONI PER VOICE MODE
+      - AUDIO_STT_ENABLED=true
+      - AUDIO_TTS_ENABLED=true
+      - AUDIO_STT_ENGINE=web
+      - AUDIO_TTS_ENGINE=web
     volumes:
       - open_webui_data:/app/backend/data
     depends_on:

